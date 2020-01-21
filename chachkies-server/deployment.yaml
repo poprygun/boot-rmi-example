@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rmi-server
+  name: rmi-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rmi-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: rmi-server
+    spec:
+      containers:
+      - image: ashumilov/chachkies-rmi-server
+        name: chachkies-rmi-server
+        ports:
+          - containerPort: 1099
+        env:
+        - name: JAVA_OPTS
+          value: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.local.only=false -Djava.rmi.server.hostname=0.0.0.0"
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: rmi-server
+  name: rmi-server
+spec:
+  ports:
+  - name: 1099-1099
+    port: 1099
+    protocol: TCP
+    targetPort: 1099
+  selector:
+    app: rmi-server
+  type: ClusterIP
+status:
+  loadBalancer: {}
